@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Scaffold</string>
+    <string name="search_for_a_podcast">Search for a podcast</string>
+    <string name="an_error_has_occurred">An error has occurred.</string>
+    <string name="retry_label">Retry</string>
+    <string name="cd_account">Account</string>
+
+    <string name="members">%d members</string>
+    <string name="info">Information</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="close">Close</string>
+    <string name="question_count">\u00A0of %d</string>
+    <string name="published_in">Published in: \n%1$s</string>
+</resources>
