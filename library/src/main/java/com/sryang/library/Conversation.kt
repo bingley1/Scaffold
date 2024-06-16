@@ -16,7 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 
 @Composable
-fun ConversationContent(
+fun ScaffoldProvider.ConversationContent(
     topBar: @Composable () -> Unit = {},
     bottomBar: @Composable () -> Unit = {},
 ) {

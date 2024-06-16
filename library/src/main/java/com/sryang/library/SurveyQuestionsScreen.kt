@@ -34,7 +34,7 @@ enum class SurveyQuestion {
 
 
 @Composable
-fun SurveyQuestionsScreen(
+fun ScaffoldProvider.SurveyQuestionsScreen(
     topBar: @Composable (() -> Unit)? = null,
     content: @Composable ((PaddingValues) -> Unit)? = null,
     bottomBar: @Composable () -> Unit = {},

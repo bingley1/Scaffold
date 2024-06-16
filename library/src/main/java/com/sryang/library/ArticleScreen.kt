@@ -12,13 +12,13 @@ import androidx.compose.ui.Modifier
 
 @ExperimentalMaterial3Api
 @Composable
-fun ArticleScreenContent(
-    bottomBarContent: @Composable () -> Unit = { },
-    topAppBar: @Composable () -> Unit = { },
+fun ScaffoldProvider.ArticleScreenContent(
+    bottomBar: @Composable () -> Unit = { },
+    topBar: @Composable () -> Unit = { },
 ) {
     Scaffold(
-        topBar = topAppBar,
-        bottomBar = bottomBarContent
+        topBar = topBar,
+        bottomBar = bottomBar
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding))
     }

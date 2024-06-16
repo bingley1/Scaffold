@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
  * Wrap Material [androidx.compose.material.Scaffold] and set [JetsnackTheme] colors.
  */
 @Composable
-fun JetsnackScaffold(
+fun ScaffoldProvider.JetsnackScaffold(
     modifier: Modifier = Modifier,
     topBar: @Composable (() -> Unit) = {},
     bottomBar: @Composable (() -> Unit) = {},

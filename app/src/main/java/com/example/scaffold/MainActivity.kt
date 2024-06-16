@@ -10,17 +10,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -33,76 +28,31 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.compose.rememberNavController
-import com.example.scaffold.jetcaster.theme.JetcasterShapes
-import com.example.scaffold.jetcaster.theme.JetcasterTheme
-import com.example.scaffold.jetcaster.theme.JetcasterTypography
-import com.example.scaffold.jetsurvey.theme.JetsurveyTheme
-import com.example.scaffold.owl.theme.PinkTheme
-import com.example.scaffold.owl.theme.TwitterTheme
-import com.example.scaffold.owl.theme.YellowTheme
-import com.example.scaffold.owl.theme.black200
-import com.example.scaffold.owl.theme.black400
-import com.example.scaffold.owl.theme.black600
-import com.sryang.library.ArticleScreenContent
-import com.sryang.library.BottomBarsProvider
-import com.sryang.library.ConversationContent
-import com.sryang.library.CourseTabs
-import com.sryang.library.HomeScreen
-import com.sryang.library.HomeSections
-import com.sryang.library.JetsnackBottomBar
-import com.sryang.library.JetsnackScaffold
-import com.sryang.library.OwlApp
-import com.sryang.library.OwlBottomBar
-import com.sryang.library.SurveyBottomBar
-import com.sryang.library.SurveyQuestionsScreen
-import com.sryang.library.SurveyScreenData
 import com.sryang.library.ThemeProvider
 import com.sryang.library.Twitter
-import com.sryang.topappbar.ChannelNameBar
-import com.sryang.topappbar.HomeAppBar
-import com.sryang.topappbar.ScaffoldTopAppBar
-import com.sryang.topappbar.SurveyTopAppBar
-import com.sryang.topappbar.TopAppBar
-import com.sryang.topappbar.TopAppBarProvider
+import com.sryang.library.bottomAppBarTypeList
+import com.sryang.library.scaffoldTypeList
+import com.sryang.library.themeTypeList
+import com.sryang.topappbar.topAppBarTypeList
 
 class MainActivity : ComponentActivity() {
-
-    private val topBars = listOf(
-        "None", "TopAppBar", "ScaffoldTopAppBar", "HomeAppBar", "SurveyTopAppBar", "ChannelNameBar"
-    )
-
-    private val scaffolds = listOf(
-        "ScaffoldExample", "OwlApp", "HomeScreen", "ConversationContent", "SurveyQuestionsScreen"
-    )
-
-    private val bottomBars = listOf(
-        "None",
-        "SurveyBottomBar",
-        "JetsnackBottomBar",
-        "OwlBottomBar",
-    )
-
-    private val themes = listOf(
-        "TwitterTheme", "PinkTheme", "YellowTheme", "JetsurveyTheme", "JetcasterTheme"
-    )
 
     @OptIn(ExperimentalFoundationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            var selectedScaffold by remember { mutableStateOf(scaffolds[0]) }
-            val topPageState = rememberPagerState { topBars.size }
-            val scaffoldPageState = rememberPagerState { scaffolds.size }
-            val bottomPageState = rememberPagerState { bottomBars.size }
-            val themePageState = rememberPagerState { themes.size }
+            var selectedScaffold by remember { mutableStateOf(scaffoldTypeList[0]) }
+            val topPageState = rememberPagerState { topAppBarTypeList.size }
+            val scaffoldPageState = rememberPagerState { scaffoldTypeList.size }
+            val bottomPageState = rememberPagerState { bottomAppBarTypeList.size }
+            val themePageState = rememberPagerState { themeTypeList.size }
 
 
-            LaunchedEffect(key1 = scaffolds) {
+            LaunchedEffect(key1 = "") {
                 snapshotFlow {
                     scaffoldPageState.currentPage
                 }.collect {
-                    selectedScaffold = scaffolds[it]
+                    selectedScaffold = scaffoldTypeList[it]
                 }
             }
 
@@ -112,21 +62,10 @@ class MainActivity : ComponentActivity() {
                         .fillMaxSize()
                         .background(Color.Blue)
                 ) {
-                    val topBar = selectTopBar(topPageState)
-                    val bottomBar = selectBottomBar(bottomPageState)
-
-                    when (selectedScaffold) {
-                        "ScaffoldExample" -> ScaffoldExample(topBar = topBar, bottomBar = bottomBar)
-                        "OwlApp" -> OwlApp(topBar = topBar, bottomBar = bottomBar)
-                        "HomeScreen" -> HomeScreen(topBar = topBar, bottomBar = bottomBar)
-                        "ConversationContent" -> ConversationContent(
-                            topBar = topBar, bottomBar = bottomBar
-                        )
-
-                        "SurveyQuestionsScreen" -> SurveyQuestionsScreen(
-                            topBar = topBar, bottomBar = bottomBar
-                        )
-                    }
+                    selectedScaffold.scaffold(
+                        selectTopBar(topPageState),
+                        selectBottomBar(bottomPageState)
+                    )
                 }
             }
 
@@ -134,60 +73,36 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
     @Composable
-    private fun selectTopBar(topPageState: PagerState): @Composable () -> Unit = {
-        var selectedTopAppBar by remember { mutableStateOf(topBars[0]) }
+    @OptIn(ExperimentalFoundationApi::class)
+    private fun selectTopBar(topPageState: PagerState): @Composable () -> Unit {
+        var selectedTopAppBar by remember { mutableStateOf(topAppBarTypeList[0]) }
 
-        LaunchedEffect(key1 = topBars) {
+        LaunchedEffect(key1 = "") {
             snapshotFlow {
                 topPageState.currentPage
             }.collect {
-                selectedTopAppBar = topBars[it]
+                selectedTopAppBar = topAppBarTypeList[it]
             }
         }
 
-        when (selectedTopAppBar) {
-            "TopAppBar" -> TopAppBarProvider.TopAppBar()
-            "ScaffoldTopAppBar" -> TopAppBarProvider.ScaffoldTopAppBar()
-            "HomeAppBar" -> TopAppBarProvider.HomeAppBar()
-            "SurveyTopAppBar" -> TopAppBarProvider.SurveyTopAppBar()
-            "ChannelNameBar" -> TopAppBarProvider.ChannelNameBar()
-        }
+        return selectedTopAppBar.topBar
     }
 
+    @Composable
     @OptIn(ExperimentalFoundationApi::class)
-    private fun selectBottomBar(bottomPageState: PagerState): @Composable () -> Unit = {
-        var selectedBottomBar by remember { mutableStateOf(bottomBars[0]) }
+    private fun selectBottomBar(bottomPageState: PagerState): @Composable () -> Unit {
+        var selectedBottomBar by remember { mutableStateOf(bottomAppBarTypeList[0]) }
 
         LaunchedEffect(key1 = bottomPageState) {
             snapshotFlow {
                 bottomPageState.currentPage
             }.collect {
-                selectedBottomBar = bottomBars[it]
+                selectedBottomBar = bottomAppBarTypeList[it]
             }
         }
 
-        when (selectedBottomBar) {
-            "SurveyBottomBar" -> {
-                BottomBarsProvider.SurveyBottomBar(true,
-                    shouldShowDoneButton = true,
-                    isNextButtonEnabled = true,
-                    onPreviousPressed = {},
-                    onNextPressed = {},
-                    onDonePressed = {})
-            }
-
-            "JetsnackBottomBar" -> BottomBarsProvider.JetsnackBottomBar(tabs = arrayOf(
-                HomeSections.FEED,
-                HomeSections.CART,
-                HomeSections.SEARCH,
-                HomeSections.PROFILE
-            ), currentRoute = HomeSections.FEED.route, navigateToRoute = { })
-
-            "OwlBottomBar" -> BottomBarsProvider.OwlBottomBar(navController = rememberNavController(),
-                remember { CourseTabs.values() })
-        }
+        return selectedBottomBar.bottomBar
     }
 
     @OptIn(ExperimentalFoundationApi::class)
@@ -196,23 +111,17 @@ class MainActivity : ComponentActivity() {
         themePageState: PagerState,
         contents: @Composable () -> Unit,
     ) {
-        var theme by remember { mutableStateOf(themes[0]) }
+        var selectedTheme by remember { mutableStateOf(themeTypeList[0]) }
 
         LaunchedEffect(key1 = themePageState) {
             snapshotFlow {
                 themePageState.currentPage
             }.collect {
-                theme = themes[it]
+                selectedTheme = themeTypeList[it]
             }
         }
 
-        when (theme) {
-            "TwitterTheme" -> TwitterTheme(content = contents)
-            "PinkTheme" -> PinkTheme(content = contents)
-            "YellowTheme" -> YellowTheme(content = contents)
-            "JetsurveyTheme" -> JetsurveyTheme(content = contents)
-            "JetcasterTheme" -> JetcasterTheme(content = contents)
-        }
+        selectedTheme.contents(contents)
     }
 
     @OptIn(ExperimentalFoundationApi::class)
@@ -223,7 +132,7 @@ class MainActivity : ComponentActivity() {
         scaffoldPageState: PagerState,
         themePageState: PagerState
     ) {
-        val height = 50.dp
+        val height = 40.dp
         Box(modifier = Modifier.fillMaxSize()) {
             Column(
                 Modifier
@@ -236,7 +145,8 @@ class MainActivity : ComponentActivity() {
                     VerticalPager(state = topPageState) {
                         Box(modifier = Modifier.fillMaxSize()) {
                             Text(
-                                text = topBars[it], modifier = Modifier.align(Alignment.Center)
+                                text = topAppBarTypeList[it].name,
+                                modifier = Modifier.align(Alignment.Center)
                             )
                         }
                     }
@@ -247,7 +157,7 @@ class MainActivity : ComponentActivity() {
                     VerticalPager(state = bottomPageState) {
                         Box(modifier = Modifier.fillMaxSize()) {
                             Text(
-                                text = bottomBars[it],
+                                text = bottomAppBarTypeList[it].name,
                                 modifier = Modifier.align(Alignment.Center)
                             )
                         }
@@ -259,7 +169,7 @@ class MainActivity : ComponentActivity() {
                     VerticalPager(state = scaffoldPageState) {
                         Box(modifier = Modifier.fillMaxSize()) {
                             Text(
-                                text = scaffolds[it],
+                                text = scaffoldTypeList[it].name,
                                 modifier = Modifier.align(Alignment.Center)
                             )
                         }
@@ -271,7 +181,8 @@ class MainActivity : ComponentActivity() {
                     VerticalPager(state = themePageState) {
                         Box(modifier = Modifier.fillMaxSize()) {
                             Text(
-                                text = themes[it], modifier = Modifier.align(Alignment.Center)
+                                text = themeTypeList[it].name,
+                                modifier = Modifier.align(Alignment.Center)
                             )
                         }
                     }

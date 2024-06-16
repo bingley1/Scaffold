@@ -51,7 +51,7 @@ private fun HomeScreenBackground(
 }
 
 @Composable
-fun HomeScreen(
+fun ScaffoldProvider.HomeScreen(
     modifier: Modifier = Modifier,
     topBar: @Composable () -> Unit,
     bottomBar: @Composable () -> Unit = {},

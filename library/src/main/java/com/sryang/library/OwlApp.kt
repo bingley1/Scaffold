@@ -10,7 +10,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 
 @Composable
-fun OwlApp(
+fun ScaffoldProvider.OwlApp(
     topBar: @Composable () -> Unit = {},
     bottomBar: @Composable () -> Unit = {},
     navController: NavHostController = rememberNavController(),

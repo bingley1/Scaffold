@@ -6,11 +6,6 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import com.example.scaffold.owl.theme.blue200
-import com.example.scaffold.owl.theme.blue700
-import com.example.scaffold.owl.theme.yellow200
-import com.example.scaffold.owl.theme.yellow500
-import com.example.scaffold.owl.theme.yellowDarkPrimary
 
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
