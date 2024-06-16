@@ -13,6 +13,7 @@ import androidx.navigation.compose.rememberNavController
 fun ScaffoldProvider.OwlApp(
     topBar: @Composable () -> Unit = {},
     bottomBar: @Composable () -> Unit = {},
+    contents: @Composable () -> Unit = {},
     navController: NavHostController = rememberNavController(),
 ) {
     Scaffold(
@@ -24,13 +25,13 @@ fun ScaffoldProvider.OwlApp(
             navController = navController, startDestination = "courses/my"
         ) {
             composable("courses/featured") {
-
+                contents.invoke()
             }
             composable("courses/my") {
-
+                contents.invoke()
             }
             composable("courses/search") {
-
+                contents.invoke()
             }
         }
     }

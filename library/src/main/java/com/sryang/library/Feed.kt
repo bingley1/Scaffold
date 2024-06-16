@@ -1,6 +1,8 @@
 package com.sryang.library
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -16,7 +18,7 @@ fun ScaffoldProvider.JetsnackScaffold(
     bottomBar: @Composable (() -> Unit) = {},
     floatingActionButton: @Composable (() -> Unit) = {},
     floatingActionButtonPosition: FabPosition = FabPosition.End,
-    content: @Composable (PaddingValues) -> Unit,
+    content: @Composable () -> Unit,
 ) {
     Scaffold(
         modifier = modifier,
@@ -25,6 +27,9 @@ fun ScaffoldProvider.JetsnackScaffold(
         snackbarHost = {},
         floatingActionButton = floatingActionButton,
         floatingActionButtonPosition = floatingActionButtonPosition,
-        content = content
-    )
+    ) {
+        Box(modifier = Modifier.padding(it)) {
+            content.invoke()
+        }
+    }
 }

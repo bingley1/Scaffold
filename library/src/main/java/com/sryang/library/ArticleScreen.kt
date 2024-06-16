@@ -15,11 +15,14 @@ import androidx.compose.ui.Modifier
 fun ScaffoldProvider.ArticleScreenContent(
     bottomBar: @Composable () -> Unit = { },
     topBar: @Composable () -> Unit = { },
+    contents: @Composable () -> Unit = { },
 ) {
     Scaffold(
         topBar = topBar,
         bottomBar = bottomBar
     ) { innerPadding ->
-        Box(modifier = Modifier.padding(innerPadding))
+        Box(modifier = Modifier.padding(innerPadding)) {
+            contents.invoke()
+        }
     }
 }

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.VerticalPager
@@ -24,6 +25,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.example.library.Buttons
+import com.example.library.CustomButtons
 import com.sryang.library.bottomAppBarTypeList
 import com.sryang.library.scaffoldTypeList
 import com.sryang.library.themeTypeList
@@ -53,7 +56,8 @@ fun ScaffoldSelector() {
         ) {
             selectedScaffold.scaffold(
                 selectTopBar(topPageState),
-                selectBottomBar(bottomPageState)
+                selectBottomBar(bottomPageState),
+                { CustomButtons() }
             )
         }
     }
@@ -69,13 +73,13 @@ private fun Selector(
     scaffoldPageState: PagerState,
     themePageState: PagerState
 ) {
-    val height = 40.dp
-    Box(modifier = Modifier.fillMaxSize()) {
+    val height = 25.dp
+    Box(modifier = Modifier.fillMaxSize().padding(bottom = 90.dp)) {
         Column(
             Modifier
                 .background(Color(0xFFeeeeee))
                 .width(300.dp)
-                .align(Alignment.Center)
+                .align(Alignment.BottomCenter)
         ) {
             Row(Modifier.height(height), verticalAlignment = Alignment.CenterVertically) {
                 Text(text = "TopBar:")

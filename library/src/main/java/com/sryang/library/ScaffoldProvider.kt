@@ -7,16 +7,20 @@ object ScaffoldProvider
 
 sealed class ScaffoldType(
     val name: String,
-    val scaffold: @Composable (@Composable () -> Unit, @Composable () -> Unit) -> Unit
+    val scaffold: @Composable (
+        topBar: @Composable () -> Unit,
+        bottomBar: @Composable () -> Unit,
+        contents: @Composable () -> Unit
+    ) -> Unit
 ) {
-    object JetSnack :
-        ScaffoldType("JetSnack", { topBar, bottomBar -> ScaffoldProvider.JetsnackScaffold(topBar = topBar, bottomBar = bottomBar) { } })
-
-    object Owl : ScaffoldType("Owl", {topBar, bottomBar -> ScaffoldProvider.OwlApp(topBar = topBar, bottomBar = bottomBar) })
-    object Home : ScaffoldType("Home", {topBar, bottomBar -> ScaffoldProvider.HomeScreen (topBar = topBar, bottomBar = bottomBar) })
-    object Conversation : ScaffoldType("Conversation", {topBar, bottomBar -> ScaffoldProvider.ConversationContent (topBar = topBar, bottomBar = bottomBar) })
+    // @formatter:off
+    object JetSnack : ScaffoldType("JetSnack", { topBar, bottomBar, contents -> ScaffoldProvider.JetsnackScaffold(topBar = topBar, bottomBar = bottomBar, content = contents) })
+    object Owl : ScaffoldType("Owl", {topBar, bottomBar, contents -> ScaffoldProvider.OwlApp(topBar = topBar, bottomBar = bottomBar, contents = contents) })
+    object Home : ScaffoldType("Home", {topBar, bottomBar, contents -> ScaffoldProvider.HomeScreen (topBar = topBar, bottomBar = bottomBar, contents = contents) })
+    object Conversation : ScaffoldType("Conversation", {topBar, bottomBar, contents -> ScaffoldProvider.ConversationContent (topBar = topBar, bottomBar = bottomBar, contents = contents) })
     @OptIn(ExperimentalMaterial3Api::class)
-    object Article : ScaffoldType("Article", { topBar, bottomBar -> ScaffoldProvider.ArticleScreenContent (topBar = topBar, bottomBar = bottomBar) })
+    object Article : ScaffoldType("Article", { topBar, bottomBar, contents -> ScaffoldProvider.ArticleScreenContent (topBar = topBar, bottomBar = bottomBar, contents = contents) })
+    // @formatter:on
 }
 
 val scaffoldTypeList = listOf(

@@ -53,8 +53,9 @@ private fun HomeScreenBackground(
 @Composable
 fun ScaffoldProvider.HomeScreen(
     modifier: Modifier = Modifier,
-    topBar: @Composable () -> Unit,
+    topBar: @Composable () -> Unit = {},
     bottomBar: @Composable () -> Unit = {},
+    contents: @Composable () -> Unit = {},
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     HomeScreenBackground(
@@ -69,7 +70,9 @@ fun ScaffoldProvider.HomeScreen(
             containerColor = Color.Transparent
         ) { contentPadding ->
             // Main Content
-            Box(modifier = Modifier.padding(contentPadding))
+            Box(modifier = Modifier.padding(contentPadding)) {
+                contents.invoke()
+            }
         }
     }
 }

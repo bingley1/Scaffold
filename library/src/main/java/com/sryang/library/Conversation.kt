@@ -19,6 +19,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 fun ScaffoldProvider.ConversationContent(
     topBar: @Composable () -> Unit = {},
     bottomBar: @Composable () -> Unit = {},
+    contents: @Composable () -> Unit = {},
 ) {
     Scaffold(
         topBar = topBar,
@@ -34,7 +35,7 @@ fun ScaffoldProvider.ConversationContent(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-
+            contents.invoke()
         }
     }
 }
