@@ -3,7 +3,6 @@ plugins {
     id 'kotlin-android'
     id 'kotlin-kapt'
 }
-
 android {
     namespace 'com.sryang.library'
     compileSdk 34
@@ -15,9 +14,7 @@ android {
         consumerProguardFiles "consumer-rules.pro"
     }
 
-    buildFeatures {
-        compose true
-    }
+    buildFeatures { compose true }
 
     buildTypes {
         release {

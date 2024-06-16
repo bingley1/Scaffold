@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -67,46 +68,35 @@ import com.sryang.topappbar.TopAppBarProvider
 
 class MainActivity : ComponentActivity() {
 
-    val topBars = listOf(
+    private val topBars = listOf(
         "None", "TopAppBar", "ScaffoldTopAppBar", "HomeAppBar", "SurveyTopAppBar", "ChannelNameBar"
     )
 
-    val scaffolds = listOf(
+    private val scaffolds = listOf(
         "ScaffoldExample", "OwlApp", "HomeScreen", "ConversationContent", "SurveyQuestionsScreen"
     )
 
-    val bottomBars = listOf(
+    private val bottomBars = listOf(
         "None",
         "SurveyBottomBar",
         "JetsnackBottomBar",
         "OwlBottomBar",
     )
 
-    val themes = listOf(
+    private val themes = listOf(
         "TwitterTheme", "PinkTheme", "YellowTheme", "JetsurveyTheme", "JetcasterTheme"
     )
 
-    @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
+    @OptIn(ExperimentalFoundationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            var theme by remember { mutableStateOf(themes[0]) }
-            var selectedTopAppBar by remember { mutableStateOf(topBars[0]) }
             var selectedScaffold by remember { mutableStateOf(scaffolds[0]) }
-            var selectedBottomBar by remember { mutableStateOf(bottomBars[0]) }
-
             val topPageState = rememberPagerState { topBars.size }
             val scaffoldPageState = rememberPagerState { scaffolds.size }
             val bottomPageState = rememberPagerState { bottomBars.size }
             val themePageState = rememberPagerState { themes.size }
 
-            LaunchedEffect(key1 = topBars) {
-                snapshotFlow {
-                    topPageState.currentPage
-                }.collect {
-                    selectedTopAppBar = topBars[it]
-                }
-            }
 
             LaunchedEffect(key1 = scaffolds) {
                 snapshotFlow {
@@ -116,61 +106,14 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            LaunchedEffect(key1 = bottomPageState) {
-                snapshotFlow {
-                    bottomPageState.currentPage
-                }.collect {
-                    selectedBottomBar = bottomBars[it]
-                }
-            }
-
-            LaunchedEffect(key1 = themePageState) {
-                snapshotFlow {
-                    themePageState.currentPage
-                }.collect {
-                    theme = themes[it]
-                }
-            }
-
-
-            ThemeChange(theme = theme) {
+            ThemeChange(themePageState) {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
                         .background(Color.Blue)
                 ) {
-                    val topBar: @Composable () -> Unit = {
-                        when (selectedTopAppBar) {
-                            "TopAppBar" -> TopAppBarProvider.TopAppBar()
-                            "ScaffoldTopAppBar" -> TopAppBarProvider.ScaffoldTopAppBar()
-                            "HomeAppBar" -> TopAppBarProvider.HomeAppBar()
-                            "SurveyTopAppBar" -> TopAppBarProvider.SurveyTopAppBar()
-                            "ChannelNameBar" -> TopAppBarProvider.ChannelNameBar()
-                        }
-                    }
-
-                    val bottomBar: @Composable () -> Unit = {
-                        when (selectedBottomBar) {
-                            "SurveyBottomBar" -> {
-                                BottomBarsProvider.SurveyBottomBar(true,
-                                    shouldShowDoneButton = true,
-                                    isNextButtonEnabled = true,
-                                    onPreviousPressed = {},
-                                    onNextPressed = {},
-                                    onDonePressed = {})
-                            }
-
-                            "JetsnackBottomBar" -> BottomBarsProvider.JetsnackBottomBar(tabs = arrayOf(
-                                HomeSections.FEED,
-                                HomeSections.CART,
-                                HomeSections.SEARCH,
-                                HomeSections.PROFILE
-                            ), currentRoute = HomeSections.FEED.route, navigateToRoute = { })
-
-                            "OwlBottomBar" -> BottomBarsProvider.OwlBottomBar(navController = rememberNavController(),
-                                remember { CourseTabs.values() })
-                        }
-                    }
+                    val topBar = selectTopBar(topPageState)
+                    val bottomBar = selectBottomBar(bottomPageState)
 
                     when (selectedScaffold) {
                         "ScaffoldExample" -> ScaffoldExample(topBar = topBar, bottomBar = bottomBar)
@@ -187,76 +130,156 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            Box(modifier = Modifier.fillMaxSize()) {
-                Column(
-                    Modifier
-                        .background(Color(0xFFeeeeee))
-                        .width(300.dp)
-                        .align(Alignment.Center)
-                ) {
-                    Row(Modifier.height(80.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Text(text = "TopBar:")
-                        VerticalPager(state = topPageState) {
-                            Box(modifier = Modifier.fillMaxSize()) {
-                                Text(
-                                    text = topBars[it], modifier = Modifier.align(Alignment.Center)
-                                )
-                            }
+            Selector(topPageState, bottomPageState, scaffoldPageState, themePageState)
+        }
+    }
+
+    @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
+    @Composable
+    private fun selectTopBar(topPageState: PagerState): @Composable () -> Unit = {
+        var selectedTopAppBar by remember { mutableStateOf(topBars[0]) }
+
+        LaunchedEffect(key1 = topBars) {
+            snapshotFlow {
+                topPageState.currentPage
+            }.collect {
+                selectedTopAppBar = topBars[it]
+            }
+        }
+
+        when (selectedTopAppBar) {
+            "TopAppBar" -> TopAppBarProvider.TopAppBar()
+            "ScaffoldTopAppBar" -> TopAppBarProvider.ScaffoldTopAppBar()
+            "HomeAppBar" -> TopAppBarProvider.HomeAppBar()
+            "SurveyTopAppBar" -> TopAppBarProvider.SurveyTopAppBar()
+            "ChannelNameBar" -> TopAppBarProvider.ChannelNameBar()
+        }
+    }
+
+    @OptIn(ExperimentalFoundationApi::class)
+    private fun selectBottomBar(bottomPageState: PagerState): @Composable () -> Unit = {
+        var selectedBottomBar by remember { mutableStateOf(bottomBars[0]) }
+
+        LaunchedEffect(key1 = bottomPageState) {
+            snapshotFlow {
+                bottomPageState.currentPage
+            }.collect {
+                selectedBottomBar = bottomBars[it]
+            }
+        }
+
+        when (selectedBottomBar) {
+            "SurveyBottomBar" -> {
+                BottomBarsProvider.SurveyBottomBar(true,
+                    shouldShowDoneButton = true,
+                    isNextButtonEnabled = true,
+                    onPreviousPressed = {},
+                    onNextPressed = {},
+                    onDonePressed = {})
+            }
+
+            "JetsnackBottomBar" -> BottomBarsProvider.JetsnackBottomBar(tabs = arrayOf(
+                HomeSections.FEED,
+                HomeSections.CART,
+                HomeSections.SEARCH,
+                HomeSections.PROFILE
+            ), currentRoute = HomeSections.FEED.route, navigateToRoute = { })
+
+            "OwlBottomBar" -> BottomBarsProvider.OwlBottomBar(navController = rememberNavController(),
+                remember { CourseTabs.values() })
+        }
+    }
+
+    @OptIn(ExperimentalFoundationApi::class)
+    @Composable
+    fun ThemeChange(
+        themePageState: PagerState,
+        contents: @Composable () -> Unit,
+    ) {
+        var theme by remember { mutableStateOf(themes[0]) }
+
+        LaunchedEffect(key1 = themePageState) {
+            snapshotFlow {
+                themePageState.currentPage
+            }.collect {
+                theme = themes[it]
+            }
+        }
+
+        when (theme) {
+            "TwitterTheme" -> TwitterTheme(content = contents)
+            "PinkTheme" -> PinkTheme(content = contents)
+            "YellowTheme" -> YellowTheme(content = contents)
+            "JetsurveyTheme" -> JetsurveyTheme(content = contents)
+            "JetcasterTheme" -> JetcasterTheme(content = contents)
+        }
+    }
+
+    @OptIn(ExperimentalFoundationApi::class)
+    @Composable
+    private fun Selector(
+        topPageState: PagerState,
+        bottomPageState: PagerState,
+        scaffoldPageState: PagerState,
+        themePageState: PagerState
+    ) {
+        val height = 50.dp
+        Box(modifier = Modifier.fillMaxSize()) {
+            Column(
+                Modifier
+                    .background(Color(0xFFeeeeee))
+                    .width(300.dp)
+                    .align(Alignment.Center)
+            ) {
+                Row(Modifier.height(height), verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "TopBar:")
+                    VerticalPager(state = topPageState) {
+                        Box(modifier = Modifier.fillMaxSize()) {
+                            Text(
+                                text = topBars[it], modifier = Modifier.align(Alignment.Center)
+                            )
                         }
                     }
-                    HorizontalDivider()
-                    Row(Modifier.height(80.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Text(text = "BottomBar:")
-                        VerticalPager(state = bottomPageState) {
-                            Box(modifier = Modifier.fillMaxSize()) {
-                                Text(
-                                    text = bottomBars[it],
-                                    modifier = Modifier.align(Alignment.Center)
-                                )
-                            }
+                }
+                HorizontalDivider()
+                Row(Modifier.height(height), verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "BottomBar:")
+                    VerticalPager(state = bottomPageState) {
+                        Box(modifier = Modifier.fillMaxSize()) {
+                            Text(
+                                text = bottomBars[it],
+                                modifier = Modifier.align(Alignment.Center)
+                            )
                         }
                     }
-                    HorizontalDivider()
-                    Row(Modifier.height(80.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Text(text = "Scaffold:")
-                        VerticalPager(state = scaffoldPageState) {
-                            Box(modifier = Modifier.fillMaxSize()) {
-                                Text(
-                                    text = scaffolds[it],
-                                    modifier = Modifier.align(Alignment.Center)
-                                )
-                            }
+                }
+                HorizontalDivider()
+                Row(Modifier.height(height), verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "Scaffold:")
+                    VerticalPager(state = scaffoldPageState) {
+                        Box(modifier = Modifier.fillMaxSize()) {
+                            Text(
+                                text = scaffolds[it],
+                                modifier = Modifier.align(Alignment.Center)
+                            )
                         }
                     }
-                    HorizontalDivider()
-                    Row(Modifier.height(80.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Text(text = "Theme:")
-                        VerticalPager(state = themePageState) {
-                            Box(modifier = Modifier.fillMaxSize()) {
-                                Text(
-                                    text = themes[it], modifier = Modifier.align(Alignment.Center)
-                                )
-                            }
+                }
+                HorizontalDivider()
+                Row(Modifier.height(height), verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "Theme:")
+                    VerticalPager(state = themePageState) {
+                        Box(modifier = Modifier.fillMaxSize()) {
+                            Text(
+                                text = themes[it], modifier = Modifier.align(Alignment.Center)
+                            )
                         }
                     }
                 }
             }
         }
     }
-}
 
-@Composable
-fun ThemeChange(
-    theme: String,
-    contents: @Composable () -> Unit,
-) {
-    when (theme) {
-        "TwitterTheme" -> TwitterTheme(content = contents)
-        "PinkTheme" -> PinkTheme(content = contents)
-        "YellowTheme" -> YellowTheme(content = contents)
-        "JetsurveyTheme" -> JetsurveyTheme(content = contents)
-        "JetcasterTheme" -> JetcasterTheme(content = contents)
-    }
 }
 
 
@@ -264,38 +287,4 @@ fun ThemeChange(
 @Composable
 fun TwitterScaffoldExample() {
     ThemeProvider.Twitter { ScaffoldExample() }
-}
-
-////////////////
-
-@Preview
-@Composable
-private fun HomeAppBarPreview3() {
-    MaterialTheme(
-        colorScheme = lightColorScheme(
-            primary = black600,
-            surface = black400,
-            background = black200,
-//            onPrimary = black200,
-//            primaryContainer = black600,
-//            secondary = black600,
-//            secondaryContainer = black600,
-//            onSurface = black600,
-//            onBackground = black600,
-//            error = black600,
-//            onError = black600,
-//            surfaceTint = black600,
-//            inverseSurface = black600,
-//            inverseOnSurface = black600,
-//            outline = black600,
-//            scrim = black600,
-//            errorContainer = black600,
-//            onErrorContainer = black600,
-//            outlineVariant = black600,
-        ),
-        shapes = JetcasterShapes,
-        typography = JetcasterTypography,
-    ) {
-        HomeScreen(topBar = { TopAppBarProvider.HomeAppBar() })
-    }
 }
