@@ -1,6 +1,7 @@
 package com.sryang.library
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
@@ -16,10 +17,14 @@ fun ScaffoldProvider.ArticleScreenContent(
     bottomBar: @Composable () -> Unit = { },
     topBar: @Composable () -> Unit = { },
     contents: @Composable () -> Unit = { },
+    snackbarHost: @Composable () -> Unit = {},
+    contentWindowInsets: WindowInsets,
 ) {
     Scaffold(
         topBar = topBar,
-        bottomBar = bottomBar
+        bottomBar = bottomBar,
+        contentWindowInsets = contentWindowInsets,
+        snackbarHost = snackbarHost
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {
             contents.invoke()

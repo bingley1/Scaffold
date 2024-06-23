@@ -20,15 +20,16 @@ fun ScaffoldProvider.ConversationContent(
     topBar: @Composable () -> Unit = {},
     bottomBar: @Composable () -> Unit = {},
     contents: @Composable () -> Unit = {},
+    snackbarHost: @Composable () -> Unit = {},
+    contentWindowInsets: WindowInsets,
 ) {
     Scaffold(
         topBar = topBar,
         bottomBar = bottomBar,
+        snackbarHost = snackbarHost,
         // Exclude ime and navigation bar padding so this can be added by the UserInput composable
-        contentWindowInsets = ScaffoldDefaults
-            .contentWindowInsets
-            .exclude(WindowInsets.navigationBars)
-            .exclude(WindowInsets.ime)
+        contentWindowInsets = contentWindowInsets
+        //ScaffoldDefaults.contentWindowInsets.exclude(WindowInsets.navigationBars).exclude(WindowInsets.ime)
     ) { paddingValues ->
         Column(
             Modifier
