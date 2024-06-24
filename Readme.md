@@ -50,3 +50,10 @@ fun Scaffold(
     content: @Composable (PaddingValues) -> Unit
 )
 ```
+
+# Scaffold 프로젝트를 구현하면서 기억나는 특징
+- Theme 컬러를 잘 활용하면 좋은 것 같다.
+- Scaffold contents 부분에 패딩을 주고 싶다면 contentWindowInsets 을 사용해보기
+- contentWindowInsets top bottom 사용 시 appbar가 있다면 적용 안됨.
+- actionButton을 추가하면 SnackBar가 ActionBar 위로 위치가 이동 함.
+- 
