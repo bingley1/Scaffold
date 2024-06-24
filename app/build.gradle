@@ -56,8 +56,8 @@ dependencies {
     implementation "androidx.navigation:navigation-compose:2.5.3"
     implementation "androidx.constraintlayout:constraintlayout-compose:1.0.1"
 
-    implementation 'com.github.bingley1:TopAppBar:139f1f420c'
-    implementation 'com.github.bingley1:BottomBars:c9cf25f2ff'
-    implementation 'com.github.bingley1:Themes:bdb00d9256'
+    implementation 'com.github.bingley1:TopAppBar:f2f2c88702'
+    implementation 'com.github.bingley1:BottomBars:198b05ed85'
+    implementation 'com.github.bingley1:Themes:ec88e13b98'
     implementation 'com.github.bingley1:Button:03b17cb87d'
 }

@@ -1,5 +1,6 @@
 package com.sryang.library
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
@@ -33,6 +34,7 @@ fun ScaffoldProvider.JetsnackScaffold(
         floatingActionButtonPosition = floatingActionButtonPosition,
         contentWindowInsets = contentWindowInsets
     ) {
+        Log.d("__JetsnackScaffold", "padding values ${it}")
         Box(modifier = Modifier.padding(it)) {
             content.invoke()
         }

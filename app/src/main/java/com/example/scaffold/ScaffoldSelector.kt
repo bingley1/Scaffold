@@ -13,7 +13,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Button
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.InputChip
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SnackbarHost
@@ -33,12 +39,60 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.library.CustomButtons
-import com.sryang.library.bottomAppBarTypeList
-import com.sryang.library.scaffoldTypeList
-import com.sryang.library.themeTypeList
-import com.sryang.topappbar.topAppBarTypeList
+import com.sryang.library.BottomAppBarTypes
+import com.sryang.library.ScaffoldType
+import com.sryang.library.ThemeTypes
+//import com.sryang.library.scaffoldTypeList
+import com.sryang.topappbar.TopAppBarTypes
+//import com.sryang.library.bottomAppBarTypeList
+//import com.sryang.library.themeTypeList
+//import com.sryang.topappbar.topAppBarTypeList
 import kotlinx.coroutines.launch
+
+
+val actionBarType = listOf(
+    FabPosition.End,
+    FabPosition.EndOverlay,
+    FabPosition.Start,
+    FabPosition.Center,
+)
+
+val scaffoldTypeList = listOf(
+    ScaffoldType.JetSnack,
+    ScaffoldType.Owl,
+    ScaffoldType.Home,
+    ScaffoldType.Conversation,
+    ScaffoldType.Article,
+)
+
+val themeTypeList = listOf(
+    ThemeTypes.Youtube,
+    ThemeTypes.RusticTheme,
+    ThemeTypes.JetSurvey,
+    ThemeTypes.JetCaster,
+    ThemeTypes.Twitter,
+    ThemeTypes.Yellow,
+    ThemeTypes.Pink,
+    ThemeTypes.JetSnack,
+)
+
+val topAppBarTypeList = listOf(
+    TopAppBarTypes.None,
+    TopAppBarTypes.Youtube,
+    TopAppBarTypes.Home,
+    TopAppBarTypes.Facebook,
+    TopAppBarTypes.Simple,
+    TopAppBarTypes.Survey,
+    TopAppBarTypes.ChannelName
+)
+
+val bottomAppBarTypeList = listOf(
+    BottomAppBarTypes.None,
+    BottomAppBarTypes.Youtube,
+    BottomAppBarTypes.Owl,
+    BottomAppBarTypes.Survey,
+    BottomAppBarTypes.JetSnack
+)
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -48,10 +102,13 @@ fun ScaffoldSelector() {
     val scaffoldPageState = rememberPagerState { scaffoldTypeList.size }
     val bottomPageState = rememberPagerState { bottomAppBarTypeList.size }
     val themePageState = rememberPagerState { themeTypeList.size }
+    val actionButtonPageState = rememberPagerState { actionBarType.size }
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     var leftValue by remember { mutableFloatStateOf(0f) }
     var rightValue by remember { mutableFloatStateOf(0f) }
+    var topValue by remember { mutableFloatStateOf(0f) }
+    var bottomValue by remember { mutableFloatStateOf(0f) }
 
 
     LaunchedEffect(key1 = "") {
@@ -70,8 +127,24 @@ fun ScaffoldSelector() {
                 selectTopBar(topPageState),
                 selectBottomBar(bottomPageState),
                 { SnackbarHost(hostState = snackbarHostState) },
-                WindowInsets(left = leftValue.dp, right = rightValue.dp),
-                { CustomButtons() }
+                WindowInsets(
+                    left = leftValue.dp,
+                    right = rightValue.dp,
+                    top = topValue.dp,
+                    bottom = bottomValue.dp
+                ),
+                actionButtonPosition(actionButtonPageState),
+                {
+                    FloatingActionButton(onClick = { /*TODO*/ }) {
+                        Icon(imageVector = Icons.Default.Add, contentDescription = "")
+                    }
+                },
+                {
+                    //CustomButtons()
+                    Button(modifier = Modifier.fillMaxWidth(), onClick = { /*TODO*/ }) {
+                        Text(text = "Inset Test")
+                    }
+                },
             )
         }
     }
@@ -81,10 +154,18 @@ fun ScaffoldSelector() {
     }, onLeftValueChange = { leftValue = it },
         leftValue = leftValue,
         rightValue = rightValue,
-        onRightValueChange = { rightValue = it }
+        onRightValueChange = { rightValue = it },
+        onBottomValueChange = { bottomValue = it },
+        onTopValueChange = { topValue = it },
+        topValue = topValue,
+        bottomValue = bottomValue,
+        actionButtonState = actionButtonPageState
     )
 }
 
+/**
+ * Scaffold의 파라미터 별로 기능을 확인 할 수 있는 Selector
+ */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun Selector(
@@ -92,11 +173,16 @@ private fun Selector(
     bottomPageState: PagerState,
     scaffoldPageState: PagerState,
     themePageState: PagerState,
+    actionButtonState: PagerState,
     onSnackBar: () -> Unit,
     leftValue: Float,
     onLeftValueChange: (Float) -> Unit,
     rightValue: Float,
     onRightValueChange: (Float) -> Unit,
+    topValue: Float,
+    onTopValueChange: (Float) -> Unit,
+    bottomValue: Float,
+    onBottomValueChange: (Float) -> Unit,
 ) {
     val height = 25.dp
     Box(
@@ -158,6 +244,18 @@ private fun Selector(
             }
             HorizontalDivider()
             Row(Modifier.height(height), verticalAlignment = Alignment.CenterVertically) {
+                Text(text = "ActionBar:")
+                VerticalPager(state = actionButtonState) {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        Text(
+                            text = actionBarType[it].toString(),
+                            modifier = Modifier.align(Alignment.Center)
+                        )
+                    }
+                }
+            }
+            HorizontalDivider()
+            Row(Modifier.height(height), verticalAlignment = Alignment.CenterVertically) {
                 Text(text = "snackbarHost:")
                 Box(modifier = Modifier.fillMaxSize()) {
                     InputChip(
@@ -189,6 +287,28 @@ private fun Selector(
                 )
                 Text(text = rightValue.toString())
             }
+            HorizontalDivider()
+            Row(Modifier.height(height), verticalAlignment = Alignment.CenterVertically) {
+                Text(text = "contentWindowInsets top:")
+                Slider(
+                    modifier = Modifier.width(200.dp),
+                    value = topValue,
+                    valueRange = 0f..100f,
+                    onValueChange = onTopValueChange
+                )
+                Text(text = topValue.toString())
+            }
+            HorizontalDivider()
+            Row(Modifier.height(height), verticalAlignment = Alignment.CenterVertically) {
+                Text(text = "contentWindowInsets bottom:")
+                Slider(
+                    modifier = Modifier.width(200.dp),
+                    value = bottomValue,
+                    valueRange = 0f..100f,
+                    onValueChange = onBottomValueChange
+                )
+                Text(text = bottomValue.toString())
+            }
         }
     }
 }
@@ -214,7 +334,7 @@ private fun ThemeSelector(
 
 @Composable
 @OptIn(ExperimentalFoundationApi::class)
-private fun selectTopBar(topPageState: PagerState): @Composable () -> Unit {
+private fun selectTopBar(topPageState: PagerState): @Composable (() -> Unit)? {
     var selectedTopAppBar by remember { mutableStateOf(topAppBarTypeList[0]) }
 
     LaunchedEffect(key1 = "") {
@@ -230,7 +350,23 @@ private fun selectTopBar(topPageState: PagerState): @Composable () -> Unit {
 
 @Composable
 @OptIn(ExperimentalFoundationApi::class)
-private fun selectBottomBar(bottomPageState: PagerState): @Composable () -> Unit {
+private fun actionButtonPosition(actionPositionPageState: PagerState): FabPosition {
+    var fabPosition by remember { mutableStateOf(actionBarType[0]) }
+
+    LaunchedEffect(key1 = "") {
+        snapshotFlow {
+            actionPositionPageState.currentPage
+        }.collect {
+            fabPosition = actionBarType[it]
+        }
+    }
+
+    return fabPosition
+}
+
+@Composable
+@OptIn(ExperimentalFoundationApi::class)
+private fun selectBottomBar(bottomPageState: PagerState): @Composable (() -> Unit)? {
     var selectedBottomBar by remember { mutableStateOf(bottomAppBarTypeList[0]) }
 
     LaunchedEffect(key1 = bottomPageState) {
@@ -262,6 +398,11 @@ fun PreviewSelector() {
         onLeftValueChange = {},
         leftValue = 0.0f,
         rightValue = 0.0f,
-        onRightValueChange = {}
+        topValue = 0.0f,
+        bottomValue = 0.0f,
+        onRightValueChange = {},
+        onBottomValueChange = {},
+        onTopValueChange = {},
+        actionButtonState = rememberPagerState { 1 }
     )
 }

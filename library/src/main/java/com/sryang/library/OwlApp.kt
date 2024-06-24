@@ -2,6 +2,7 @@ package com.sryang.library
 
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -17,13 +18,17 @@ fun ScaffoldProvider.OwlApp(
     contents: @Composable () -> Unit = {},
     snackbarHost: @Composable () -> Unit = {},
     contentWindowInsets: WindowInsets,
+    floatingActionButton: @Composable (() -> Unit) = {},
+    floatingActionButtonPosition: FabPosition = FabPosition.End,
     navController: NavHostController = rememberNavController(),
 ) {
     Scaffold(
         topBar = topBar,
         bottomBar = bottomBar,
         snackbarHost = snackbarHost,
-        contentWindowInsets = contentWindowInsets
+        contentWindowInsets = contentWindowInsets,
+        floatingActionButton = floatingActionButton,
+        floatingActionButtonPosition = floatingActionButtonPosition
     ) { innerPaddingModifier ->
         NavHost(
             modifier = Modifier.padding(innerPaddingModifier),

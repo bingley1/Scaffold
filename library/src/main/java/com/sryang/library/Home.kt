@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.material3.FabPosition
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -54,6 +55,8 @@ fun ScaffoldProvider.HomeScreen(
     bottomBar: @Composable () -> Unit = {},
     snackbarHost: @Composable () -> Unit = {},
     contents: @Composable () -> Unit = {},
+    floatingActionButton: @Composable (() -> Unit) = {},
+    floatingActionButtonPosition: FabPosition = FabPosition.End,
     contentWindowInsets: WindowInsets,
 ) {
     HomeScreenBackground(
@@ -64,7 +67,9 @@ fun ScaffoldProvider.HomeScreen(
             bottomBar = bottomBar,
             snackbarHost = snackbarHost,
             containerColor = Color.Transparent,
-            contentWindowInsets = contentWindowInsets
+            floatingActionButton = floatingActionButton,
+            contentWindowInsets = contentWindowInsets,
+            floatingActionButtonPosition = floatingActionButtonPosition
         ) { contentPadding ->
             // Main Content
             Box(modifier = Modifier.padding(contentPadding)) {

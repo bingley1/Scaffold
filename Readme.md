@@ -2,6 +2,10 @@ https://developer.android.com/develop/ui/compose/components/scaffold
 
 - basic material design의 layout 구조를 구현.
 
+basic material design의 layout은 무엇?
+https://m3.material.io/foundations/layout/understanding-layout/overview
+
+
 - fundamental structure complex user interfaces.
 
 - app bars and floating action buttons
