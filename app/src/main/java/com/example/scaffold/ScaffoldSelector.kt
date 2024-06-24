@@ -123,6 +123,7 @@ fun ScaffoldSelector() {
         Box(
             modifier = Modifier.fillMaxSize()
         ) {
+            //Scaffold 라이브러리 제공 인터페이스 호출
             selectedScaffold.scaffold(
                 selectTopBar(topPageState),
                 selectBottomBar(bottomPageState),

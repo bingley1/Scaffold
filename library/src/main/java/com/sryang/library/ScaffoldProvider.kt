@@ -7,6 +7,9 @@ import androidx.compose.runtime.Composable
 
 object ScaffoldProvider
 
+/**
+ * @param scaffold Scaffold 타입별 제공. Scaffold의 파라미터는 자유롭게 변경을 위해 호출 시 파라미터를 설정 할 수 있게 구현(복잡함.) 라이브러리에서 제공하는 Scaffold들 내부 디자인이 없어 제공하는 의미가 없어짐.
+ */
 sealed class ScaffoldType(
     val name: String,
     val scaffold: @Composable (
