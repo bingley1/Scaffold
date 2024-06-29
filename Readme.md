@@ -2,6 +2,10 @@
 
 https://developer.android.com/develop/ui/compose/components/scaffold
 
+https://developer.android.com/reference/kotlin/androidx/compose/material3/package-summary#Scaffold(androidx.compose.ui.Modifier,kotlin.Function0,kotlin.Function0,kotlin.Function0,kotlin.Function0,androidx.compose.material3.FabPosition,androidx.compose.ui.graphics.Color,androidx.compose.ui.graphics.Color,androidx.compose.foundation.layout.WindowInsets,kotlin.Function1)
+
+https://developer.android.com/jetpack/androidx/releases/compose-material3
+
 - basic material design의 layout 구조를 구현.
 
 basic material design의 layout은 무엇?

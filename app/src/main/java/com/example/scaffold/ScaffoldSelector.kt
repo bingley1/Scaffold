@@ -5,10 +5,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.VerticalPager
@@ -76,6 +78,7 @@ val themeTypeList = listOf(
     ThemeTypes.JetSnack,
 )
 
+/** top app bar 종류별 리스트 */
 val topAppBarTypeList = listOf(
     TopAppBarTypes.None,
     TopAppBarTypes.Youtube,
@@ -86,6 +89,7 @@ val topAppBarTypeList = listOf(
     TopAppBarTypes.ChannelName
 )
 
+/** bottom app bar 종류별 리스트 */
 val bottomAppBarTypeList = listOf(
     BottomAppBarTypes.None,
     BottomAppBarTypes.Youtube,
@@ -98,11 +102,17 @@ val bottomAppBarTypeList = listOf(
 @Composable
 fun ScaffoldSelector() {
     var selectedScaffold by remember { mutableStateOf(scaffoldTypeList[0]) }
+
+    /** TopAppBar 라이브러리에서 제공하는 샘플 리스트를 pageState 형태로 선언 */
     val topPageState = rememberPagerState { topAppBarTypeList.size }
-    val scaffoldPageState = rememberPagerState { scaffoldTypeList.size }
+
+    /** BottomAppBar 라이브러리에서 제공하는 샘플 리스트를 pageState 형태로 선언 */
     val bottomPageState = rememberPagerState { bottomAppBarTypeList.size }
+    val scaffoldPageState = rememberPagerState { scaffoldTypeList.size }
     val themePageState = rememberPagerState { themeTypeList.size }
     val actionButtonPageState = rememberPagerState { actionBarType.size }
+
+    /** 1. snackBar 사용을 위한 상태 값 (샘플 코드 참조) */
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     var leftValue by remember { mutableFloatStateOf(0f) }
@@ -125,9 +135,12 @@ fun ScaffoldSelector() {
         ) {
             //Scaffold 라이브러리 제공 인터페이스 호출
             selectedScaffold.scaffold(
-                selectTopBar(topPageState),
-                selectBottomBar(bottomPageState),
-                { SnackbarHost(hostState = snackbarHostState) },
+                selectTopBar(topPageState), // topbar pager에서 현재 position에 대한 TopAppBar compose 호출
+                selectBottomBar(bottomPageState), // bottombar pager에서 현재 position에 대한 BottomAppBar compose 호출
+                {
+                    //2. snackBar 사용을 위한 Host compose (샘플 코드 참조)
+                    SnackbarHost(hostState = snackbarHostState)
+                },
                 WindowInsets(
                     left = leftValue.dp,
                     right = rightValue.dp,
@@ -142,8 +155,16 @@ fun ScaffoldSelector() {
                 },
                 {
                     //CustomButtons()
-                    Button(modifier = Modifier.fillMaxWidth(), onClick = { /*TODO*/ }) {
-                        Text(text = "Inset Test")
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        Column(modifier = Modifier.align(Alignment.BottomCenter)) {
+                            Button(
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                onClick = { /*TODO*/ }) {
+                                Text(text = "Inset Test")
+                            }
+                            Spacer(modifier = Modifier.height(100.dp))
+                        }
                     }
                 },
             )
@@ -151,7 +172,10 @@ fun ScaffoldSelector() {
     }
 
     Selector(topPageState, bottomPageState, scaffoldPageState, themePageState, onSnackBar = {
-        scope.launch { snackbarHostState.showSnackbar("Snackbar") }
+        scope.launch {
+            // 3. snackBar 사용을 위한 호출 코드(이 이벤트를 통해 화면에 snackBar가 나옴.)
+            snackbarHostState.showSnackbar("Snackbar")
+        }
     }, onLeftValueChange = { leftValue = it },
         leftValue = leftValue,
         rightValue = rightValue,
@@ -190,126 +214,143 @@ private fun Selector(
         modifier = Modifier
             .fillMaxSize()
     ) {
+        var show by remember { mutableStateOf(true) }
         Column(
             Modifier
                 .background(Color(0x99eeeeee))
                 .fillMaxWidth()
                 .align(Alignment.Center)
         ) {
-            Row(Modifier.height(height), verticalAlignment = Alignment.CenterVertically) {
-                Text(text = "TopBar:")
-                VerticalPager(state = topPageState) {
+            Column {
+                Row(Modifier.height(height), verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "test panel show:")
                     Box(modifier = Modifier.fillMaxSize()) {
-                        Text(
-                            text = topAppBarTypeList[it].name,
-                            modifier = Modifier.align(Alignment.Center)
-                        )
+                        InputChip(
+                            modifier = Modifier.align(Alignment.Center),
+                            selected = false,
+                            onClick = { show = !show },
+                            label = { Text(text = "$show") })
                     }
                 }
+                HorizontalDivider()
             }
-            HorizontalDivider()
-            Row(Modifier.height(height), verticalAlignment = Alignment.CenterVertically) {
-                Text(text = "BottomBar:")
-                VerticalPager(state = bottomPageState) {
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        Text(
-                            text = bottomAppBarTypeList[it].name,
-                            modifier = Modifier.align(Alignment.Center)
+            if (show)
+                Column {
+                    Row(Modifier.height(height), verticalAlignment = Alignment.CenterVertically) {
+                        Text(text = "TopBar:")
+                        VerticalPager(state = topPageState) {
+                            Box(modifier = Modifier.fillMaxSize()) {
+                                Text(
+                                    text = topAppBarTypeList[it].name,
+                                    modifier = Modifier.align(Alignment.Center)
+                                )
+                            }
+                        }
+                    }
+                    HorizontalDivider()
+                    Row(Modifier.height(height), verticalAlignment = Alignment.CenterVertically) {
+                        Text(text = "BottomBar:")
+                        VerticalPager(state = bottomPageState) {
+                            Box(modifier = Modifier.fillMaxSize()) {
+                                Text(
+                                    text = bottomAppBarTypeList[it].name,
+                                    modifier = Modifier.align(Alignment.Center)
+                                )
+                            }
+                        }
+                    }
+                    HorizontalDivider()
+                    Row(Modifier.height(height), verticalAlignment = Alignment.CenterVertically) {
+                        Text(text = "Scaffold:")
+                        VerticalPager(state = scaffoldPageState) {
+                            Box(modifier = Modifier.fillMaxSize()) {
+                                Text(
+                                    text = scaffoldTypeList[it].name,
+                                    modifier = Modifier.align(Alignment.Center)
+                                )
+                            }
+                        }
+                    }
+                    HorizontalDivider()
+                    Row(Modifier.height(height), verticalAlignment = Alignment.CenterVertically) {
+                        Text(text = "Theme:")
+                        VerticalPager(state = themePageState) {
+                            Box(modifier = Modifier.fillMaxSize()) {
+                                Text(
+                                    text = themeTypeList[it].name,
+                                    modifier = Modifier.align(Alignment.Center)
+                                )
+                            }
+                        }
+                    }
+                    HorizontalDivider()
+                    Row(Modifier.height(height), verticalAlignment = Alignment.CenterVertically) {
+                        Text(text = "ActionBar:")
+                        VerticalPager(state = actionButtonState) {
+                            Box(modifier = Modifier.fillMaxSize()) {
+                                Text(
+                                    text = actionBarType[it].toString(),
+                                    modifier = Modifier.align(Alignment.Center)
+                                )
+                            }
+                        }
+                    }
+                    HorizontalDivider()
+                    Row(Modifier.height(height), verticalAlignment = Alignment.CenterVertically) {
+                        Text(text = "snackbarHost:")
+                        Box(modifier = Modifier.fillMaxSize()) {
+                            InputChip(
+                                modifier = Modifier.align(Alignment.Center),
+                                selected = false,
+                                onClick = { onSnackBar() },
+                                label = { Text(text = "show SnackBar") })
+                        }
+                    }
+                    HorizontalDivider()
+                    Row(Modifier.height(height), verticalAlignment = Alignment.CenterVertically) {
+                        Text(text = "contentWindowInsets left:")
+                        Slider(
+                            modifier = Modifier.width(200.dp),
+                            value = leftValue,
+                            valueRange = 0f..100f,
+                            onValueChange = onLeftValueChange
                         )
+                        Text(text = leftValue.toString())
+                    }
+                    HorizontalDivider()
+                    Row(Modifier.height(height), verticalAlignment = Alignment.CenterVertically) {
+                        Text(text = "contentWindowInsets right:")
+                        Slider(
+                            modifier = Modifier.width(200.dp),
+                            value = rightValue,
+                            valueRange = 0f..100f,
+                            onValueChange = onRightValueChange
+                        )
+                        Text(text = rightValue.toString())
+                    }
+                    HorizontalDivider()
+                    Row(Modifier.height(height), verticalAlignment = Alignment.CenterVertically) {
+                        Text(text = "contentWindowInsets top:")
+                        Slider(
+                            modifier = Modifier.width(200.dp),
+                            value = topValue,
+                            valueRange = 0f..100f,
+                            onValueChange = onTopValueChange
+                        )
+                        Text(text = topValue.toString())
+                    }
+                    HorizontalDivider()
+                    Row(Modifier.height(height), verticalAlignment = Alignment.CenterVertically) {
+                        Text(text = "contentWindowInsets bottom:")
+                        Slider(
+                            modifier = Modifier.width(200.dp),
+                            value = bottomValue,
+                            valueRange = 0f..100f,
+                            onValueChange = onBottomValueChange
+                        )
+                        Text(text = bottomValue.toString())
                     }
                 }
-            }
-            HorizontalDivider()
-            Row(Modifier.height(height), verticalAlignment = Alignment.CenterVertically) {
-                Text(text = "Scaffold:")
-                VerticalPager(state = scaffoldPageState) {
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        Text(
-                            text = scaffoldTypeList[it].name,
-                            modifier = Modifier.align(Alignment.Center)
-                        )
-                    }
-                }
-            }
-            HorizontalDivider()
-            Row(Modifier.height(height), verticalAlignment = Alignment.CenterVertically) {
-                Text(text = "Theme:")
-                VerticalPager(state = themePageState) {
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        Text(
-                            text = themeTypeList[it].name,
-                            modifier = Modifier.align(Alignment.Center)
-                        )
-                    }
-                }
-            }
-            HorizontalDivider()
-            Row(Modifier.height(height), verticalAlignment = Alignment.CenterVertically) {
-                Text(text = "ActionBar:")
-                VerticalPager(state = actionButtonState) {
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        Text(
-                            text = actionBarType[it].toString(),
-                            modifier = Modifier.align(Alignment.Center)
-                        )
-                    }
-                }
-            }
-            HorizontalDivider()
-            Row(Modifier.height(height), verticalAlignment = Alignment.CenterVertically) {
-                Text(text = "snackbarHost:")
-                Box(modifier = Modifier.fillMaxSize()) {
-                    InputChip(
-                        modifier = Modifier.align(Alignment.Center),
-                        selected = false,
-                        onClick = { onSnackBar() },
-                        label = { Text(text = "show SnackBar") })
-                }
-            }
-            HorizontalDivider()
-            Row(Modifier.height(height), verticalAlignment = Alignment.CenterVertically) {
-                Text(text = "contentWindowInsets left:")
-                Slider(
-                    modifier = Modifier.width(200.dp),
-                    value = leftValue,
-                    valueRange = 0f..100f,
-                    onValueChange = onLeftValueChange
-                )
-                Text(text = leftValue.toString())
-            }
-            HorizontalDivider()
-            Row(Modifier.height(height), verticalAlignment = Alignment.CenterVertically) {
-                Text(text = "contentWindowInsets right:")
-                Slider(
-                    modifier = Modifier.width(200.dp),
-                    value = rightValue,
-                    valueRange = 0f..100f,
-                    onValueChange = onRightValueChange
-                )
-                Text(text = rightValue.toString())
-            }
-            HorizontalDivider()
-            Row(Modifier.height(height), verticalAlignment = Alignment.CenterVertically) {
-                Text(text = "contentWindowInsets top:")
-                Slider(
-                    modifier = Modifier.width(200.dp),
-                    value = topValue,
-                    valueRange = 0f..100f,
-                    onValueChange = onTopValueChange
-                )
-                Text(text = topValue.toString())
-            }
-            HorizontalDivider()
-            Row(Modifier.height(height), verticalAlignment = Alignment.CenterVertically) {
-                Text(text = "contentWindowInsets bottom:")
-                Slider(
-                    modifier = Modifier.width(200.dp),
-                    value = bottomValue,
-                    valueRange = 0f..100f,
-                    onValueChange = onBottomValueChange
-                )
-                Text(text = bottomValue.toString())
-            }
         }
     }
 }
@@ -338,10 +379,12 @@ private fun ThemeSelector(
 private fun selectTopBar(topPageState: PagerState): @Composable (() -> Unit)? {
     var selectedTopAppBar by remember { mutableStateOf(topAppBarTypeList[0]) }
 
+    // Pager에서 스크롤 시 현재 position을 확인 하는 코드
     LaunchedEffect(key1 = "") {
         snapshotFlow {
-            topPageState.currentPage
+            topPageState.currentPage //현재 페이지 감지
         }.collect {
+            // 페이지 변경 시 position event가 발생하는 곳
             selectedTopAppBar = topAppBarTypeList[it]
         }
     }
